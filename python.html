@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Python + Copilot · Automate Boring Tasks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] } } }, darkMode: 'class' }
+  </script>
+  <style>
+    :root{--brand:#003A8C;--brand-dark:#002E6B;--brand-50:#E6F0FF;--brand-accent:#00A3E0}
+    .btn{ padding:.5rem .875rem; border-radius:.75rem; font-size:.875rem }
+    .btn-primary{ background:var(--brand); color:white; }
+    .btn-primary:hover{ background:var(--brand-dark); }
+    .kbd{ border:1px solid rgba(0,0,0,.15); border-bottom-width:2px; padding:.1rem .35rem; border-radius:.375rem; font-size:.75rem; background:white }
+    .transition-base{ transition: all .2s ease; }
+    img{ max-width:100%; height:auto }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/70 dark:border-gray-800/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-white flex items-center justify-center shadow-sm overflow-hidden">
+          <!-- Swapped to Python logo as requested -->
+          <img src="https://www.python.org/static/community_logos/python-logo.png" alt="Python Logo" class="h-6 w-auto" />
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold leading-tight">Python + Copilot · Automate Boring Tasks</h1>
+          <p class="text-xs text-gray-500">Practical, gentle introduction for coworkers</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block min-w-[220px]">
+          <div class="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+            <div id="courseBar" class="h-full bg-[var(--brand)] transition-all w-0"></div>
+          </div>
+          <p class="text-[11px] text-right mt-1 text-gray-500"><span id="coursePctTop">0%</span> complete</p>
+        </div>
+        <a href="homepage.html" class="btn border border-gray-200 dark:border-gray-800">← Back to Homepage</a>
+        <button id="themeToggle" class="px-3 py-2 rounded-xl text-sm border border-gray-200 dark:border-gray-800">Toggle theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 pb-24">
+    <!-- Sidebar: playlist + FAQs -->
+    <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
+      <section class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <h3 class="text-base font-semibold">Playlist</h3>
+          <div class="text-xs text-gray-500">Progress: <span id="coursePct">0%</span></div>
+        </div>
+        <div id="playlist" class="p-2"></div>
+      </section>
+
+      <section class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl" id="faqCard">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800">
+          <h3 class="text-base font-semibold">Lesson FAQs <span id="faqLessonTitle" class="text-xs text-gray-500 font-normal">—</span></h3>
+        </div>
+        <div class="p-4" id="faqList"></div>
+      </section>
+    </aside>
+
+    <!-- Main content -->
+    <section class="lg:col-span-8 xl:col-span-9 space-y-6">
+      <article class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-xl font-semibold">Welcome</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400">This course walks you through installing Python & VS Code, basic Python syntax, running supplied scripts, and how to use Copilot effectively.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="aspect-video w-full rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
+          <div id="playerMount" class="w-full h-full"></div>
+        </div>
+        <div class="mt-4">
+          <div class="flex items-center gap-2">
+            <button class="tab-btn btn" data-tab="notes">Lesson Notes</button>
+            <button class="tab-btn btn" data-tab="resources">Resources</button>
+            <button class="tab-btn btn" data-tab="qa">Q&A</button>
+          </div>
+          <div class="mt-4 text-sm">
+            <section id="tab-notes" class="tab hidden">
+              <h3 class="font-medium">Learning objectives</h3>
+              <ul id="objectivesList" class="mt-2 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300"></ul>
+              <div class="mt-4">
+                <label class="block text-xs text-gray-500">Your notes</label>
+                <textarea id="notesBox" class="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2" rows="6" placeholder="Write anything you want to remember…"></textarea>
+              </div>
+            </section>
+            <section id="tab-resources" class="tab hidden">
+              <h3 class="font-medium">Lesson resources & downloads</h3>
+              <ul id="resourceList" class="mt-2 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300"></ul>
+            </section>
+            <section id="tab-qa" class="tab hidden">
+              <h3 class="font-medium">Q&A (local)</h3>
+              <textarea id="qaBox" class="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2" rows="4" placeholder="Questions, roadblocks, ideas…"></textarea>
+            </section>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center justify-between gap-2 flex-wrap">
+          <div class="text-xs text-gray-500">Current lesson: <span id="currentLessonLabel">—</span></div>
+          <div class="flex items-center gap-2">
+            <button id="markDone" class="btn btn-primary">Mark lesson complete</button>
+            <button id="prevLesson" class="btn border border-gray-200 dark:border-gray-800">Prev</button>
+            <button id="nextLesson" class="btn border border-gray-200 dark:border-gray-800">Next</button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    // === helpers ===
+    function yt(id){ return '<iframe class="w-full h-full" src="https://www.youtube.com/embed/'+id+'" frameborder="0" allowfullscreen></iframe>'; }
+
+    // === FAQ banks (simple fallback) ===
+    const DEFAULT_FAQS = [
+      { q: 'Do I need admin rights?', a: 'You may for installing Python; running scripts generally does not require admin.' },
+      { q: 'Will this break my PC?', a: 'No — we work in a simple folder and a virtual environment (".venv").' }
+    ];
+
+    const LESSON_FAQS = {
+      m1l1: [
+        { q: 'Which Python should I pick?', a: 'Choose the latest stable 64-bit installer for your OS.' },
+        { q: 'How do I check the version?', a: 'Open Terminal/Command Prompt and run: python --version' }
+      ],
+      m1l2: [
+        { q: 'I installed VS Code; what next?', a: 'Install the official Python extension, then re-open your folder.' },
+        { q: 'How do I check Python in VS Code?', a: 'Open VS Code Terminal and run: python --version (or python3 on macOS).' }
+      ],
+      m1l3: [
+        { q: 'pip is not found', a: 'Try: python -m pip install --upgrade pip' }
+      ],
+      m3l1: [
+        { q: 'requirements.txt fails', a: 'Check internet/proxy, then try: python -m pip install -r requirements.txt' }
+      ]
+    };
+
+    // === course data ===
+    const course = {
+      modules: [
+        { id:'m1', title:'Module 1 · Setup', lessons:[
+          { id:'m1l1', title:'Download & install Python', dur:'5m', embed:
+            // Added example images + how-to snippet
+            '<div class="p-4 text-sm space-y-3">\
+  <p>Go to <a class="underline" href="https://www.python.org/downloads/" target="_blank">python.org</a>, download the latest version, and run the installer. On Windows, tick <strong>Add Python to PATH</strong>. Then check version with <code>python --version</code>.</p>\
+  <figure class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800"><img src="https://via.placeholder.com/960x540.png?text=Python+Installer+Screenshot" alt="Dummy screenshot of Python installer"/><figcaption class="p-2 text-xs text-gray-500">Example image embedded inside lesson text.</figcaption></figure>\
+  <figure class="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800"><img src="https://www.python.org/static/community_logos/python-logo.png" alt="Python wordmark"/><figcaption class="p-2 text-xs text-gray-500">You can embed any helpful image — logos, screenshots, diagrams.</figcaption></figure>\
+  <div class="mt-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">\
+    <div class="text-xs text-gray-600 dark:text-gray-400 mb-1">How to add an image in a text lesson:</div>\
+    <pre class="text-[12px] overflow-auto"><code>&lt;img src="/path/to/image.png" alt="Helpful alt text" class="rounded-xl border" /&gt;</code></pre>\
+  </div>\
+</div>',
+            objectives:['Download Python','Install on Windows/macOS','Check python --version'],
+            resources:[{label:'Python Downloads', href:'https://www.python.org/downloads/'}]
+          },
+          { id:'m1l2', title:'Install VS Code & Python extension (confirm version)', dur:'6m', embed:
+            '<div class="p-4 text-sm">Download <a class="underline" href="https://code.visualstudio.com/" target="_blank">VS Code</a>. Add the official <em>Python</em> extension. In VS Code, open the built-in Terminal (Ctrl + <span class="kbd">&#96;</span>) and run <code>python --version</code> (or <code>python3 --version</code> on macOS) to double-check.</div>',
+            objectives:['Install VS Code','Add Python extension','Confirm Python version in VS Code'],
+            resources:[{label:'VS Code', href:'https://code.visualstudio.com/'}]
+          },
+          { id:'m1l3', title:'Install libraries with pip', dur:'5m', embed:
+            '<div class="p-4 text-sm"><p>Open Terminal in VS Code and install common libraries:</p><pre class="p-3 bg-gray-100 rounded-lg overflow-auto"><code>python -m pip install --upgrade pip\npip install requests\npip install pandas</code></pre></div>',
+            objectives:['Use pip','Install common libraries'],
+            resources:[{label:'pip docs', href:'https://pip.pypa.io/en/stable/'}]
+          }
+        ]},
+        { id:'m2', title:'Module 2 · Python Basics (single video)', lessons:[
+          { id:'m2l1', title:'Basics in one video', dur:'12m', embed: yt('kqtD5dpn9C8'),
+            objectives:['Understand variables, loops, and functions'], resources:[{label:'Python cheatsheet (PDF)', href:'#'}] }
+        ]},
+        { id:'m3', title:'Module 3 · Run a Supplied Script', lessons:[
+          { id:'m3l1', title:'Step-by-step: from download to result', dur:'10m', embed:
+            '<div class="p-4 text-sm"><ol class="list-decimal list-inside space-y-2">\
+<li>Download the project zip and unzip.</li>\
+<li>Open the folder in VS Code.</li>\
+<li>Create virtual environment: <code>python -m venv .venv</code></li>\
+<li>Activate it (<code>.venv\\Scripts\\Activate.ps1</code> on Windows, <code>source .venv/bin/activate</code> on macOS).</li>\
+<li>Install requirements: <code>pip install -r requirements.txt</code></li>\
+<li>Run: <code>python script.py</code></li>\
+</ol></div>',
+            objectives:['Open project in VS Code','Create & activate venv','Install requirements','Run script'],
+            resources:[{label:'Virtual environments (docs)', href:'https://docs.python.org/3/library/venv.html'}]
+          }
+        ]},
+        { id:'m4', title:'Module 4 · Copilot Prompting (text)', lessons:[
+          { id:'m4l1', title:'How to prompt Copilot well', dur:'7m', embed:
+            '<div class="p-4 text-sm"><ul class="list-disc list-inside space-y-2">\
+<li><strong>Define the problem clearly</strong> (e.g., “rename all CSV files to .bak”).</li>\
+<li><strong>Write pseudocode</strong> (steps in plain English before code).</li>\
+<li><strong>Paste errors back</strong> into Copilot with context and ask “fix this”.</li>\
+<li><strong>Iterate</strong> — request comments, safer versions, tests, and better names.</li>\
+</ul>\
+<div class="mt-3"><strong>Good starter prompt:</strong><pre class="mt-1 p-3 bg-gray-100 rounded-lg overflow-auto"><code># Task: In this folder, rename every .csv to .bak.\n# Please show a dry-run first (print changes), then ask to confirm before applying.\n# I am on Windows/macOS. Use pathlib and handle errors.</code></pre></div>\
+</div>',
+            objectives:['Define problems','Use pseudocode','Leverage Copilot to debug & iterate'],
+            resources:[{label:'Copilot in VS Code', href:'https://code.visualstudio.com/docs/editor/artificial-intelligence'}]
+          }
+        ]}
+      ]
+    };
+
+    // === rendering ===
+    const playlistEl = document.getElementById('playlist');
+    function renderPlaylist(){
+      playlistEl.innerHTML = '';
+      course.modules.forEach((mod, idx)=>{
+        const modId = 'mod-'+mod.id;
+        const wrap = document.createElement('div');
+        wrap.className = 'border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden mb-3';
+        wrap.innerHTML = '\n          <button class="w-full text-left p-3 bg-gray-50 dark:bg-gray-800/60 flex items-center justify-between" data-acc="'+modId+'">\n            <span class="text-sm font-medium">'+mod.title+'</span>\n            <span class="text-xs text-gray-500">▼</span>\n          </button>\n          <div id="'+modId+'" class="p-2 space-y-1'+(idx===0?'':' hidden')+'"></div>';
+        playlistEl.appendChild(wrap);
+        const body = wrap.querySelector('#'+modId);
+        mod.lessons.forEach(lsn=>{
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-base';
+          row.innerHTML = '\n            <div class="min-w-0">\n              <button class="text-sm font-medium underline underline-offset-2" data-play="'+lsn.id+'">'+lsn.title+'</button>\n              <div class="text-xs text-gray-500">'+lsn.dur+'</div>\n            </div>\n            <label class="text-xs flex items-center gap-2"><input type="checkbox" data-done="'+lsn.id+'" class="rounded"/> Done</label>';
+          body.appendChild(row);
+        });
+        wrap.querySelector('[data-acc]').addEventListener('click',()=>{ body.classList.toggle('hidden'); });
+      });
+    }
+
+    function allLessons(){ return course.modules.flatMap(m=>m.lessons); }
+    function findLesson(id){ for (const m of course.modules){ const l = m.lessons.find(x=>x.id===id); if (l) return l; } return null; }
+
+    function getState(){ try { return JSON.parse(localStorage.getItem('py.copilot.state')) || {}; } catch { return {}; } }
+    function setState(n){ localStorage.setItem('py.copilot.state', JSON.stringify(n)); updateProgress(); }
+
+    function hydrate(){
+      const st = getState();
+      document.querySelectorAll('[data-done]').forEach(cb=>{
+        const id = cb.getAttribute('data-done');
+        cb.checked = !!(st.completed && st.completed[id]);
+        cb.addEventListener('change',()=>{ const s = getState(); s.completed = s.completed||{}; s.completed[id] = cb.checked; setState(s); });
+      });
+      const lsn = currentLesson() || allLessons()[0];
+      if (lsn) loadLesson(lsn.id);
+      switchTab(st.lastTab || 'notes');
+    }
+
+    function currentLesson(){ const st = getState(); return st.currentLessonId ? findLesson(st.currentLessonId) : null; }
+    function setCurrentLesson(id){ const s = getState(); s.currentLessonId = id; setState(s); loadLesson(id); }
+
+    function renderFaqs(lsn){
+      const faqWrap = document.getElementById('faqList'); if (!faqWrap) return;
+      faqWrap.innerHTML = '';
+      const faqs = (LESSON_FAQS[lsn.id] || DEFAULT_FAQS);
+      faqs.forEach((f,i)=>{
+        const det = document.createElement('details');
+        det.className = 'group'+(i?' mt-3':'');
+        det.innerHTML = '<summary class="cursor-pointer text-sm font-medium">'+f.q+'</summary><p class="mt-2 text-sm text-gray-600 dark:text-gray-400">'+f.a+'</p>';
+        faqWrap.appendChild(det);
+      });
+      const faqTitle = document.getElementById('faqLessonTitle'); if (faqTitle) faqTitle.textContent = '— '+lsn.title;
+    }
+
+    function loadLesson(id){
+      const lsn = findLesson(id); if (!lsn) return;
+      const s = getState(); s.currentLessonId = id; setState(s);
+      const mount = document.getElementById('playerMount');
+      mount.innerHTML = lsn.embed || '';
+      document.getElementById('currentLessonLabel').textContent = lsn.title;
+      // objectives
+      const objList = document.getElementById('objectivesList'); objList.innerHTML = '';
+      (lsn.objectives||[]).forEach(n=>{ const li = document.createElement('li'); li.textContent = n; objList.appendChild(li); });
+      // resources
+      const resList = document.getElementById('resourceList'); resList.innerHTML = '';
+      (lsn.resources||[]).forEach(r=>{ const li = document.createElement('li'); li.innerHTML = '<a class="underline" href="'+(r.href||'#')+'" target="_blank">'+r.label+'</a>'; resList.appendChild(li); });
+      // faqs
+      renderFaqs(lsn);
+      // notes/qa
+      const st2 = getState();
+      document.getElementById('notesBox').value = (st2.notes && st2.notes[id]) || '';
+      document.getElementById('qaBox').value = st2.qa || '';
+      // checkbox sync
+      const cb = document.querySelector('[data-done="'+id+'"]'); if (cb) cb.checked = !!(st2.completed && st2.completed[id]);
+    }
+
+    // tabs
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn=>btn.addEventListener('click', ()=>switchTab(btn.dataset.tab)));
+    function switchTab(name){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden'));
+      const el = document.getElementById('tab-'+name); if (el) el.classList.remove('hidden');
+      const s = getState(); s.lastTab = name; setState(s);
+    }
+
+    // progress
+    function updateProgress(){
+      const lessons = allLessons();
+      const s = getState(); const done = s.completed ? Object.values(s.completed).filter(Boolean).length : 0;
+      const pct = Math.round((done/lessons.length)*100);
+      const pctEls = [document.getElementById('coursePct'), document.getElementById('coursePctTop')];
+      pctEls.forEach(el=>{ if (el) el.textContent = pct+'%'; });
+      const bar = document.getElementById('courseBar'); if (bar) bar.style.width = pct+'%';
+    }
+
+    // controls
+    document.getElementById('markDone').addEventListener('click', ()=>{
+      const cur = currentLesson(); if (!cur) return;
+      const s = getState(); s.completed = s.completed||{}; s.completed[cur.id] = true; setState(s);
+      const lessons = allLessons(); const idx = lessons.findIndex(l=>l.id===cur.id);
+      if (idx>=0 && idx<lessons.length-1) setCurrentLesson(lessons[idx+1].id);
+      updateProgress();
+    });
+    document.getElementById('prevLesson').addEventListener('click', ()=>{
+      const cur = currentLesson() || allLessons()[0];
+      const lessons = allLessons(); const idx = lessons.findIndex(l=>l.id===cur.id);
+      if (idx>0) setCurrentLesson(lessons[idx-1].id);
+    });
+    document.getElementById('nextLesson').addEventListener('click', ()=>{
+      const cur = currentLesson() || allLessons()[0];
+      const lessons = allLessons(); const idx = lessons.findIndex(l=>l.id===cur.id);
+      if (idx>=0 && idx<lessons.length-1) setCurrentLesson(lessons[idx+1].id);
+    });
+
+    // init
+    (function init(){
+      // theme
+      const themeBtn = document.getElementById('themeToggle');
+      if (themeBtn){
+        if ((localStorage.getItem('theme')||'')==='dark' || (!localStorage.getItem('theme') && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+        themeBtn.addEventListener('click', ()=>{
+          document.documentElement.classList.toggle('dark');
+          localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light');
+        });
+      }
+      renderPlaylist();
+      playlistEl.addEventListener('click', (e)=>{
+        const b = e.target.closest('[data-play]');
+        if (b){ e.preventDefault(); setCurrentLesson(b.getAttribute('data-play')); }
+      });
+      const st = getState();
+      const first = allLessons()[0];
+      if (!currentLesson() && first){ setCurrentLesson(first.id); }
+      switchTab(st.lastTab || 'notes');
+      updateProgress();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Creo Parametric Onboarding · F&P Healthcare</title>
+  <meta name="description" content="Creo Parametric onboarding: fundamentals, exercises, surfacing, and F&P CAD best practices. Structured from the provided course notes."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','ui-sans-serif','system-ui'] } } }, darkMode: 'class' }
+  </script>
+  <style>
+    :root{--brand:#003A8C;--brand-dark:#002E6B;--brand-50:#E6F0FF;--brand-accent:#00A3E0}
+    .btn{ padding:.5rem .875rem; border-radius:.75rem; font-size:.875rem }
+    .btn-primary{ background:var(--brand); color:white; }
+    .btn-primary:hover{ background:var(--brand-dark); }
+    .transition-base{ transition: all .2s ease; }
+    .kbd{ border:1px solid rgba(0,0,0,.15); border-bottom-width:2px; padding:.1rem .35rem; border-radius:.375rem; font-size:.75rem; background:white }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/70 dark:border-gray-800/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-2xl bg-white flex items-center justify-center shadow-sm overflow-hidden">
+          <!-- Uses the same white icon approach as other courses -->
+          <img src="images/osa.png" alt="OSA Logo" class="h-6 w-auto" />
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold leading-tight">Creo Parametric for OSA</h1>
+          <p class="text-xs text-gray-500">Fisher &amp; Paykel Healthcare · Fundamentals & Best Practices</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="homepage.html" class="btn border border-gray-200 dark:border-gray-800">← Back to Homepage</a>
+        <button id="themeToggle" class="px-3 py-2 rounded-xl text-sm border border-gray-200 dark:border-gray-800">Toggle theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6 pb-24">
+    <!-- Sidebar: playlist + FAQs -->
+    <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
+      <section class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+          <h3 class="text-base font-semibold">Playlist</h3>
+          <div class="text-xs text-gray-500">Progress: <span id="coursePct">0%</span></div>
+        </div>
+        <div id="playlist" class="p-2"></div>
+      </section>
+
+      <section class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl" id="faqCard">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800">
+          <h3 class="text-base font-semibold">Lesson FAQs <span id="faqLessonTitle" class="text-xs text-gray-500 font-normal">—</span></h3>
+        </div>
+        <div class="p-4" id="faqList"></div>
+      </section>
+    </aside>
+
+    <!-- Main content -->
+    <section class="lg:col-span-8 xl:col-span-9 space-y-6">
+      <article class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-xl font-semibold">Creo Onboarding</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Follow the playlist on the left. Your notes & progress save automatically.</p>
+          </div>
+          <div class="min-w-[220px] w-full sm:w-auto">
+            <div class="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div id="courseBar" class="h-full bg-[var(--brand)] transition-all w-0"></div>
+            </div>
+            <p class="text-xs text-right mt-1 text-gray-500"><span id="coursePctTop">0%</span> complete</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="aspect-video w-full rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
+          <div id="playerMount" class="w-full h-full"></div>
+        </div>
+        <div class="mt-4">
+          <div class="flex items-center gap-2">
+            <button class="tab-btn btn" data-tab="notes">Lesson Notes</button>
+            <button class="tab-btn btn" data-tab="resources">Resources</button>
+            <button class="tab-btn btn" data-tab="qa">Q&amp;A</button>
+          </div>
+          <div class="mt-4 text-sm">
+            <section id="tab-notes" class="tab hidden">
+              <h3 class="font-medium">Learning objectives</h3>
+              <ul id="objectivesList" class="mt-2 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300"></ul>
+              <div class="mt-4">
+                <label class="block text-xs text-gray-500">Your notes</label>
+                <textarea id="notesBox" class="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2" rows="6" placeholder="Write anything you want to remember…"></textarea>
+              </div>
+            </section>
+            <section id="tab-resources" class="tab hidden">
+              <h3 class="font-medium">Lesson resources &amp; downloads</h3>
+              <ul id="resourceList" class="mt-2 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300"></ul>
+            </section>
+            <section id="tab-qa" class="tab hidden">
+              <h3 class="font-medium">Q&amp;A (local)</h3>
+              <p class="text-gray-600 dark:text-gray-400">Jot down questions to discuss with your mentor.</p>
+              <div class="mt-2">
+                <textarea id="qaBox" class="mt-1 w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-2" rows="4" placeholder="Questions, roadblocks, ideas…"></textarea>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="mt-4 flex items-center justify-between gap-2 flex-wrap">
+          <div class="text-xs text-gray-500">Current lesson: <span id="currentLessonLabel">—</span></div>
+          <div class="flex items-center gap-2">
+            <button id="markDone" class="btn btn-primary">Mark lesson complete</button>
+            <button id="prevLesson" class="btn border border-gray-200 dark:border-gray-800">Prev</button>
+            <button id="nextLesson" class="btn border border-gray-200 dark:border-gray-800">Next</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h3 class="text-lg font-semibold">Completion certificate</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Unlocks at 100% completion.</p>
+          </div>
+          <button id="downloadCert" class="btn btn-primary disabled:opacity-40" disabled>Download certificate</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-xs text-gray-500 flex flex-col sm:flex-row gap-2 sm:items-center justify-between">
+      <p>© <span id="year"></span> Fisher & Paykel Healthcare Limited. All rights reserved.</p>
+      <p>Contact: <a class="underline" href="mailto:training@fphcare.com">training@fphcare.com</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== THEME =====
+    const themeBtn = document.getElementById('themeToggle');
+    if ((localStorage.getItem('theme')||'')==='dark' || (!localStorage.getItem('theme') && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+    themeBtn.addEventListener('click', ()=>{
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ===== DATA =====
+    const DEFAULT_FAQS = [
+      {q:'Do I need prior Creo experience?', a:'No. We start with UI and selection basics.'},
+      {q:'Is it safe to practice?', a:'Yes—use sandbox models and follow the practice exercises.'},
+      {q:'Where are the best practices?', a:'See Module 4 resources and summaries.'}
+    ];
+
+    // Helper to embed YouTube by ID
+    function yt(id){ return `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${id}" title="YouTube" frameborder="0" allowfullscreen></iframe>`; }
+
+    // NOTE: The uploaded .txt did not include the actual YouTube URLs/IDs, only lesson titles. Replace VIDEO_ID_* placeholders with your real IDs.
+    const course = {
+      modules: [
+        {
+          id: 'c1',
+          title: 'Module 1 · Fundamentals',
+          lessons: [
+                       {
+              id: 'm1l1',
+              title: 'Meet your SMEs',
+              dur: '6m',
+              embed: `
+                <div class="p-4">
+                  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="border border-gray-200 dark:border-gray-800 rounded-xl p-4 bg-white/70 dark:bg-gray-900/40">
+                      <img src="Images/profile picture/markt.jpg" alt="MarkT" class="w-14 h-14 rounded-full mb-3 object-cover" />
+                      <h4 class="font-semibold">Mark Tomlinson</h4>
+                      <p class="text-xs text-gray-500">Principal Product Development Engineer</p>
+                      <a class="text-sm underline mt-2 inline-block" href="mailto:mark.tomlinson@fphcare.co.nz">mark.tomlinson@fphcare.co.nz</a>
+                    </div>
+                    <div class="border border-gray-200 dark:border-gray-800 rounded-xl p-4 bg-white/70 dark:bg-gray-900/40">
+                      <img src="Images/profile picture/roheetp.jpg" alt="Roheet" class="w-14 h-14 rounded-full mb-3 object-cover" />
+                      <h4 class="font-semibold">Roheet Patel</h4>
+                      <p class="text-xs text-gray-500"> Principal Product Development Engineer</p>
+                      <a class="text-sm underline mt-2 inline-block" href="mailto:mitesh.patel@fphcare.co.nz">roheet.patel@fphcare.co.nz</a>
+                    </div>
+                    <div class="border border-gray-200 dark:border-gray-800 rounded-xl p-4 bg-white/70 dark:bg-gray-900/40">
+                      <img src="Images/profile picture/tonyp.jpg" alt="Tony" class="w-14 h-14 rounded-full mb-3 object-cover" />
+                      <h4 class="font-semibold">Tony Spear</h4>
+                      <p class="text-xs text-gray-500">Principal Product Development Engineer</p>
+                      <a class="text-sm underline mt-2 inline-block" href="mailto:mitesh.patel@fphcare.co.nz">tony.spear@fphcare.co.nz</a>
+                    </div>
+                      <div class="border border-gray-200 dark:border-gray-800 rounded-xl p-4 bg-white/70 dark:bg-gray-900/40">
+                      <img src="Images/profile picture/vitaly.jpg" alt="Vitaly" class="w-14 h-14 rounded-full mb-3 object-cover" />
+                      <h4 class="font-semibold">Vital Kapelevich</h4>
+                      <p class="text-xs text-gray-500">Principal Product Development Engineer</p>
+                      <a class="text-sm underline mt-2 inline-block" href="mailto:mitesh.patel@fphcare.co.nz">vitaly.kapelevich@fphcare.co.nz</a>
+                    </div>
+                      <div class="border border-gray-200 dark:border-gray-800 rounded-xl p-4 bg-white/70 dark:bg-gray-900/40">
+                      <img src="Images/profile picture/jasonl.jpg" alt="Jason" class="w-14 h-14 rounded-full mb-3 object-cover" />
+                      <h4 class="font-semibold">Jason Lim</h4>
+                      <p class="text-xs text-gray-500">Creo Co-ordinator & Product Development Manager</p>
+                      <a class="text-sm underline mt-2 inline-block" href="mailto:mitesh.patel@fphcare.co.nz">jason.lim@fphcare.co.nz</a>
+                    </div>
+                  </div>
+                </div>
+              `,
+              objectives: [
+                'Know who to contact if you need help with Creo',
+                
+              ],
+              resources: [{ label: 'None for this section' }],
+              faqs: [
+                { q: 'How do I reach the right SME?', a: 'Flick them a message on Teams and they will be happy to help ASAP' },
+              ]
+            },
+            { id:'c1l1', title:'Opening Models and Spin, Pan, & Zoom', dur:'6m', embed: yt('VvO2CM8LO4k?si=4qn4mmg6cCYHmTsf'), objectives:[
+              'Open existing models', 'Use spin/pan/zoom confidently'
+            ], resources:[ {label:'Title from spec', href:'#'} ], faqs:[{q:'Mouse not rotating?', a:'Check middle-mouse button or use on-screen spin tool.'}] },
+            { id:'c1l2', title:'The User Interface', dur:'7m', embed: yt('p_iJIQOnaEA?si=KD2nQwKeEFSGgKgb'), objectives:[ 'Know ribbon, model tree, common panels' ], resources:[], faqs:[] },
+            { id:'c1l3', title:'Selecting Objects', dur:'7m', embed: yt('jbUffYf2Uas?si=KY-FY0lqcIixbhzR'), objectives:[ 'Select faces, edges, quilts; use pick-from-list' ], resources:[], faqs:[] },
+            { id:'c1l4', title:'Help', dur:'5m', embed: yt('yF1KzoLsQs4?si=dc6x5coR6pLyaqvR'), objectives:[ 'Find built-in help & learning center' ], resources:[], faqs:[] },
+            { id:'c1x1', title:'Exercise 1 (text)', dur:'20m', embed:`<div class="p-4 text-sm"><ol class="list-decimal list-inside space-y-1"><li>FOR SMES</li></ol></div>` },
+            { id:'c1x2', title:'Exercise 2 (text)', dur:'20m', embed:`<div class="p-4 text-sm"><ol class="list-decimal list-inside space-y-1"><li>FOR SMES</li></ol></div>` },
+            { id:'c1chk', title:'Learning Checklist', dur:'—', embed:`<div class="p-4 text-sm"><ul class="list-disc list-inside space-y-1"><li>Comfortable with navigation</li><li>Understand UI layout</li><li>Confident selection methods</li></ul></div>` }
+          ]
+        },
+        {
+          id: 'c2',
+          title: 'Module 2 · Exercises',
+          lessons: [
+            { id:'c2i1', title:'Invitation to Part Model Training (Roheet & Mark)', dur:'December 2025', embed:`<div class="p-4 text-sm">You will receive an invite for part modeling training. Bring questions from Module 1.</div>` },
+            { id:'c2h1', title:'Homework Exercise 1', dur:'—', embed:`<div class="p-4 text-sm"><p>For SMEs to determine</p></div>` },
+            { id:'c2h2', title:'Homework Exercise 2', dur:'—', embed:`<div class="p-4 text-sm"><p>For SMEs to determine</p></div>` }
+          ]
+        },
+        {
+          id: 'c3',
+          title: 'Module 3 · Surfacing (with Tony)',
+          lessons: [
+            { id:'c3l1', title:'Surfacing basics: quilts & curvature', dur:'8m', embed:`<div class="p-4 text-sm"><ul class="list-disc list-inside space-y-1"><li>Quilts vs solid bodies</li><li>Keep curvature smooth; avoid singularities</li><li>Minimum curves to define surfaces</li></ul></div>` },
+            { id:'c3l2', title:'Merging quilts reliably', dur:'6m', embed:`<div class="p-4 text-sm"><p>Preserve the earliest quilt ID during merges for stability. Select the oldest quilt first in the merge feature.</p></div>` }
+          ]
+        },
+        {
+          id: 'c4',
+          title: 'Module 4 · Principles & Team Workflow',
+          lessons: [
+            { id:'c4best', title:'CAD Best Practices (summary)', dur:'—', embed:`<div class="p-4 text-sm space-y-2"><p><strong>Templates:</strong> Use F&P defaults (accuracy, units, params). Ensure K: drive access.</p><p><strong>Bodies:</strong> Prefer one solid body per part; multibody by exception.</p><p><strong>Symmetry:</strong> Model patient right-hand side; mirror near end of tree.</p><p><strong>Layers:</strong> Collect datums/curves/quilts for visibility control.</p><p><strong>Sketcher:</strong> Fully constrain before release; avoid fillets/chamfers in sketch.</p><p><strong>References:</strong> Intentional parent/child links; use Reference Viewer.</p><p class="text-xs text-gray-500">See full Best Practice Guide in resources.</p></div>` },
+            { id:'c4team', title:'Team responsibilities & file structure', dur:'—', embed:`<div class="p-4 text-sm space-y-2"><p>CAD Lead ensures quality, alignment, version control, reference flow.</p><p>Use shared storage (H/Windchill), not local drives.</p><p>Pick a versioning method: independent build folders vs single master with part folders.</p></div>` },
+            { id:'c4draw', title:'Drawings: QC vs Detail', dur:'—', embed:`<div class="p-4 text-sm"><ul class="list-disc list-inside space-y-1"><li>QC sheet: isometric, main projection, controlled specs w/ tolerances.</li><li>Detail sheet: geometry comprehension, reference-only dims.</li><li>Mask drawings: BOM, iso view with callouts, DS reference.</li></ul></div>` },
+            { id:'c4res', title:'Resources (PDFs & glossary)', dur:'—', embed:`<div class="p-4 text-sm"><ul class="list-disc list-inside"><li><a class="underline" href="#" target="_blank">CAD Best Practice Guide (PDF)</a></li><li><a class="underline" href="#" target="_blank">Glossary of Terms</a></li></ul></div>` }
+          ]
+        }
+      ]
+    };
+
+    // ===== STATE =====
+    const S = { state: 'creo.parametric.course.state' };
+
+    // ===== RENDERING =====
+    const playlistEl = document.getElementById('playlist');
+    function renderPlaylist(){
+      playlistEl.innerHTML = '';
+      course.modules.forEach((mod)=>{
+        const modId = `mod-${mod.id}`;
+        const wrap = document.createElement('div');
+        wrap.className = 'border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden mb-3';
+        wrap.innerHTML = `
+          <button class="w-full text-left p-3 bg-gray-50 dark:bg-gray-800/60 flex items-center justify-between" data-acc="${modId}">
+            <span class="text-sm font-medium">${mod.title}</span>
+            <span class="text-xs text-gray-500">▼</span>
+          </button>
+          <div id="${modId}" class="p-2 space-y-1 hidden"></div>`;
+        playlistEl.appendChild(wrap);
+        const body = wrap.querySelector('#'+modId);
+        mod.lessons.forEach(lsn=>{
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-base';
+          row.innerHTML = `
+            <div class="min-w-0">
+              <button class="text-sm font-medium underline underline-offset-2" data-play="${lsn.id}">${lsn.title}</button>
+              <div class="text-xs text-gray-500">${lsn.dur}</div>
+            </div>
+            <label class="text-xs flex items-center gap-2"><input type="checkbox" data-done="${lsn.id}" class="rounded"/> Done</label>`;
+          body.appendChild(row);
+        });
+        wrap.querySelector('[data-acc]').addEventListener('click',()=>{ body.classList.toggle('hidden'); });
+      });
+    }
+
+    // ===== HELPERS =====
+    function allLessons(){ return course.modules.flatMap(m=>m.lessons); }
+    function findLesson(id){ for (const m of course.modules){ const l = m.lessons.find(x=>x.id===id); if (l) return l; } return null; }
+
+    // ===== STATE OPS =====
+    function getState(){ try { return JSON.parse(localStorage.getItem(S.state)) || {}; } catch { return {}; } }
+    function setState(next){ localStorage.setItem(S.state, JSON.stringify(next)); updateProgress(); }
+
+    // ===== HYDRATE =====
+    function hydrate(){
+      const st = getState();
+      document.querySelectorAll('[data-done]').forEach(cb=>{
+        const id = cb.getAttribute('data-done');
+        cb.checked = !!(st.completed && st.completed[id]);
+        cb.addEventListener('change', ()=>{ const s = getState(); s.completed = s.completed||{}; s.completed[id] = cb.checked; setState(s); });
+      });
+      const lsn = currentLesson() || allLessons()[0];
+      if (lsn) loadLesson(lsn.id);
+    }
+
+    function currentLesson(){ const st = getState(); return st.currentLessonId ? findLesson(st.currentLessonId) : null; }
+    function setCurrentLesson(id){ const s = getState(); s.currentLessonId = id; setState(s); loadLesson(id); }
+
+    // ===== LOAD LESSON =====
+    function loadLesson(id){
+      const lsn = findLesson(id); if (!lsn) return;
+      const s = getState(); s.currentLessonId = id; setState(s);
+      const mount = document.getElementById('playerMount');
+      if (lsn.embed) { mount.innerHTML = lsn.embed; }
+      else if (lsn.video) { mount.innerHTML = `<iframe class=\"w-full h-full\" src=\"${lsn.video}\" title=\"lesson\" allowfullscreen></iframe>`; }
+      document.getElementById('currentLessonLabel').textContent = lsn.title;
+      const objList = document.getElementById('objectivesList'); objList.innerHTML = '';
+      (lsn.objectives||[]).forEach(n=>{ const li=document.createElement('li'); li.textContent=n; objList.appendChild(li); });
+      const resList = document.getElementById('resourceList'); resList.innerHTML = '';
+      (lsn.resources||[]).forEach(r=>{ const li=document.createElement('li'); li.innerHTML = `<a class=\"underline\" href=\"${r.href||'#'}\" target=\"_blank\">${r.label}</a>${r.note?` — <span class=\\\"text-xs text-gray-500\\\">${r.note}</span>`:''}`; resList.appendChild(li); });
+      const faqWrap = document.getElementById('faqList');
+      if (faqWrap){
+        faqWrap.innerHTML = '';
+        const faqs = (lsn.faqs || DEFAULT_FAQS);
+        faqs.forEach((f, i)=>{
+          const det = document.createElement('details');
+          det.className = 'group' + (i ? ' mt-3' : '');
+          det.innerHTML = `<summary class=\"cursor-pointer text-sm font-medium\">${f.q}</summary><p class=\"mt-2 text-sm text-gray-600 dark:text-gray-400\">${f.a}</p>`;
+          faqWrap.appendChild(det);
+        });
+        const faqTitle = document.getElementById('faqLessonTitle'); if (faqTitle) faqTitle.textContent = '— ' + lsn.title;
+      }
+      const st2 = getState();
+      document.getElementById('notesBox').value = (st2.notes && st2.notes[id]) || '';
+      document.getElementById('qaBox').value = st2.qa || '';
+      const cb = document.querySelector(`[data-done="${id}"]`); if (cb) cb.checked = !!(st2.completed && st2.completed[id]);
+      switchTab(st2.lastTab || 'notes');
+    }
+
+    // ===== TABS =====
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn=>btn.addEventListener('click', ()=>switchTab(btn.dataset.tab)));
+    function switchTab(name){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden'));
+      document.getElementById('tab-'+name).classList.remove('hidden');
+      const s = getState(); s.lastTab = name; setState(s);
+    }
+
+    // ===== NOTES SAVE =====
+    document.getElementById('notesBox').addEventListener('input', (e)=>{
+      const st = getState(); st.notes = st.notes||{}; const cur = currentLesson(); if (cur){ st.notes[cur.id] = e.target.value; setState(st); }
+    });
+    document.getElementById('qaBox').addEventListener('input', (e)=>{
+      const st = getState(); st.qa = e.target.value; setState(st);
+    });
+
+    // ===== NAV / PROGRESS =====
+    document.getElementById('markDone').addEventListener('click', ()=>{
+      const cur = currentLesson(); if (!cur) return;
+      const s = getState(); s.completed = s.completed||{}; s.completed[cur.id] = true; setState(s);
+      const cb = document.querySelector(`[data-done=\"${cur.id}\"]`); if (cb) cb.checked = true;
+      const lessons = allLessons();
+      const idx = lessons.findIndex(l=>l.id===cur.id);
+      if (idx>=0 && idx < lessons.length-1){ setCurrentLesson(lessons[idx+1].id); }
+      updateProgress();
+    });
+    document.getElementById('prevLesson').addEventListener('click', ()=>{
+      const cur = currentLesson() || allLessons()[0];
+      const lessons = allLessons();
+      const idx = lessons.findIndex(l=>l.id===cur.id);
+      if (idx>0) setCurrentLesson(lessons[idx-1].id);
+    });
+    document.getElementById('nextLesson').addEventListener('click', ()=>{
+      const cur = currentLesson() || allLessons()[0];
+      const lessons = allLessons();
+      const idx = lessons.findIndex(l=>l.id===cur.id);
+      if (idx>=0 && idx < lessons.length-1) setCurrentLesson(lessons[idx+1].id);
+    });
+
+    function updateProgress(){
+      const lessons = allLessons();
+      const s = getState(); const done = s.completed ? Object.values(s.completed).filter(Boolean).length : 0;
+      const pct = Math.round((done/lessons.length)*100);
+      document.getElementById('coursePct').textContent = pct+'%';
+      document.getElementById('coursePctTop').textContent = pct+'%';
+      document.getElementById('courseBar').style.width = pct+'%';
+      document.getElementById('downloadCert').disabled = pct<100;
+    }
+
+    // ===== CERTIFICATE =====
+    document.getElementById('downloadCert').addEventListener('click', ()=>{
+      const name = prompt('Name to print on certificate:') || 'Learner';
+      const html = `<!doctype html><meta charset=\"utf-8\"><style>body{font-family:Inter,system-ui;margin:40px;background:#f7fafc} .card{max-width:800px;margin:auto;padding:40px;border:2px solid #003A8C;border-radius:24px;background:white} h1{color:#003A8C} .sub{color:#4a5568} .sig{margin-top:48px;display:flex;justify-content:space-between;color:#2d3748}</style><div class=card><h1>Certificate of Completion</h1><p class=sub>This certifies that</p><h2 style=\"margin:8px 0 24px\">${name}</h2><p>has successfully completed the <strong>Creo Parametric Onboarding</strong> course.</p><p class=sub>Completed on ${new Date().toLocaleDateString()}</p><div class=sig><div>_____________________<br/>Training Lead</div><div>_____________________<br/>HR / People Ops</div></div></div>`;
+      const blob = new Blob([html], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='Creo-Onboarding-Certificate.html'; a.click(); URL.revokeObjectURL(url);
+    });
+
+    // ===== SELF TESTS =====
+    function runSelfTests(){
+      const errs = [];
+      const ids = allLessons().map(l=>l.id);
+      const dup = ids.find((id, i)=> ids.indexOf(id) !== i);
+      if (dup) errs.push(`Duplicate lesson id detected: ${dup}`);
+      allLessons().forEach((l, i)=>{ if (!l.title) errs.push(`Lesson ${l.id||i} missing title`); if (!l.embed && !l.video) errs.push(`Lesson ${l.id} missing embed/video`); });
+      if (errs.length){
+        console.error('[Creo Onboarding] Self-tests failed:', errs);
+        const warn = document.createElement('div'); warn.className = 'fixed bottom-4 right-4 bg-red-600 text-white text-sm px-4 py-2 rounded-xl shadow-lg'; warn.textContent = 'Course: Self-tests failed. Open console for details.'; document.body.appendChild(warn);
+      } else {
+        console.log('[Creo Onboarding] All self-tests passed.');
+      }
+    }
+
+    // ===== INIT =====
+    renderPlaylist();
+    playlistEl.addEventListener('click', (e)=>{ const playBtn = e.target.closest('[data-play]'); if (playBtn) { e.preventDefault(); const id = playBtn.getAttribute('data-play'); if (id) setCurrentLesson(id); } });
+    hydrate();
+    updateProgress();
+    if (!currentLesson()) setCurrentLesson(allLessons()[0].id);
+    runSelfTests();
+  </script>
+</body>
+</html>
